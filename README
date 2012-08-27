@@ -1,0 +1,16 @@
+Installation
+Add to your Gemfile:
+
+gem 'omniauth-tqzone'
+Then bundle install.
+
+Or install it yourself as:
+
+$ gem install omniauth-qzone
+Usage
+here's a quick example, adding the middleware to a Rails app in config/initializers/omniauth.rb:
+
+Rails.application.config.middleware.use OmniAuth::Builder do
+  provider :tqzone, ENV['TQQ_KEY'], ENV['TQQ_SECRET']
+ 
+end
