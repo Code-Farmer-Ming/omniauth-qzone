@@ -13,8 +13,8 @@ Gem::Specification.new do |s|
 
   s.rubyforge_project = "omniauth-qzone"
   
-  s.add_dependency 'omniauth', '~> 1.0.0.rc2'
-  s.add_dependency 'omniauth-oauth', '~> 1.0.0.rc2'
+  s.add_dependency 'omniauth', '~> 1.0.0'
+  s.add_dependency 'omniauth-oauth', '~> 1.0.0'
   s.add_dependency 'multi_json'
 
   s.files = Dir.glob("lib/**/*")
