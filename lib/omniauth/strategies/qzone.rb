@@ -1,31 +1,35 @@
-require 'omniauth-oauth'
+require 'omniauth-oauth2'
 require 'multi_json'
 module OmniAuth
   module Strategies
     #taken from https://github.com/he9qi/omniauth_china/blob/55dac2d2a657d20711459f89dfeb802a8f06c81e/lib/omniauth_china/strategies/qzone.rb
-    class Qzone < OmniAuth::Strategies::OAuth
+    class Qzone < OmniAuth::Strategies::OAuth2
       option :name, 'qzone'
-      option :sign_in, true
-      def initialize(*args)
-        super
-        options.client_options =  {
-          :access_token_path => '/oauth/qzoneoauth_access_token',
-          :authorize_path => '/oauth/qzoneoauth_authorize',
-          :realm => 'OmniAuth',
-          :request_token_path => '/oauth/qzoneoauth_request_token',
-          :site => 'http://openapi.qzone.qq.com',
-          :scheme             => :query_string,
-          :http_method        => :get
-        }
-      end
       
-      #HACK qzone is using a none-standard parameter oauth_overicode
-      def callback_phase
-        options.client_options[:access_token_path] = "/oauth/qzoneoauth_access_token?oauth_vericode=#{request['oauth_vericode'] }" if request['oauth_vericode']
-        super
-      end
-     
-      uid { access_token.params[:openid] }
+      option :client_options, {
+        :site => 'https://graph.qq.com/oauth2.0/',
+        :authorize_url => '/oauth2.0/authorize',
+        :token_url => "/oauth2.0/token"
+      }
+
+      option :token_params, {
+        :state => 'foobar',
+        :parse => :query
+      }
+
+      
+      uid { 
+        @uid ||= begin
+          access_token.options[:mode] = :query
+          access_token.options[:param_name] = :access_token
+          # Response Example: "callback( {\"client_id\":\"11111\",\"openid\":\"000000FFFF\"} );\n"
+          response = access_token.get('/oauth2.0/me')
+          #TODO handle error case
+          matched = response.body.match(/"openid":"(?<openid>\w+)"/)
+          matched[:openid]
+        end
+        
+      }
       
       info do
         {
@@ -42,16 +46,18 @@ module OmniAuth
       extra do
         { :raw_info => raw_info }
       end
-
       def raw_info
-        @raw_info ||= MultiJson.decode(access_token.get("/user/get_user_info?format=json&openid=#{access_token.params[:openid]}").body)
-      rescue ::Errno::ETIMEDOUT
-        raise ::Timeout::Error
-      end
-
-      def request_phase
-        options[:authorize_params].merge!({:oauth_consumer_key=>options.consumer_key})
-        super
+        @raw_info ||= begin
+          #TODO handle error case
+          #TODO make info request url configurable
+          
+          client.request(:get, "https://graph.qq.com/user/get_user_info", :params => {
+              :format => :json,
+              :openid => uid,
+              :oauth_consumer_key => options[:client_id],
+              :access_token => access_token.token
+            }, :parse => :json).parsed
+        end
       end
     end
   end

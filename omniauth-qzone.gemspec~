@@ -6,7 +6,7 @@ Gem::Specification.new do |s|
   s.name        = "omniauth-qzone"
   s.version     = Omniauth::Qzone::VERSION
   s.authors     = ["zhang ming"]
-  s.email       = ["zhangming1021@gmail.com"]
+  s.email       = ["tomorrownull@gmail.com"]
   s.homepage    = ""
   s.summary     = %q{an omniauth strategy for qzone}
   s.description = %q{an omniauth strategy for qzone}
