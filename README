@@ -11,6 +11,6 @@ Usage
 here's a quick example, adding the middleware to a Rails app in config/initializers/omniauth.rb:
 
 Rails.application.config.middleware.use OmniAuth::Builder do
-  provider :tqzone, ENV['TQQ_KEY'], ENV['TQQ_SECRET']
+  provider :qzone, ENV['TQQ_KEY'], ENV['TQQ_SECRET']
  
 end
