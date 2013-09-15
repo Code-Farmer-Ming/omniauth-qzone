@@ -1,7 +1,7 @@
 Installation
 Add to your Gemfile:
 
-gem 'omniauth-tqzone'
+gem 'omniauth-qzone'
 Then bundle install.
 
 Or install it yourself as:
